@@ -13,6 +13,21 @@ def main():
 
     zipPath = sys.argv[1]
 
+    check_zipfile(zipPath)
+
+    print('Done.')
+
+
+def check_zipfile(zipPath):
+
+    if(os.path.exists(zipPath) and zipPath.endswith('.zip')):
+        run_program(zipPath)
+    elif (os.path.exists(zipPath) == False):
+        print("Invalid file Path")
+
+
+
+def run_program(zipPath):
     temporaryFile = os.path.join(os.getcwd(), 'TempFile\\')
 
     create_tempFile(temporaryFile)
@@ -29,7 +44,7 @@ def main():
 
     delete_tempFile(temporaryFile)
 
-    print('Done.')
+
 
 
 
@@ -77,12 +92,18 @@ def create_directory_structure(data, temporaryFile):
     for key in data.keys():
         if (key == 'directory_structure'):
             for image_themes in data[key]:
-                create_image_folder(temporaryFile, image_themes)
-                image_themes_path = create_path_name(temporaryFile, image_themes)
+                if (image_themes.endswith('.jpg') or image_themes.endswith('.jpeg')):
+                    create_images_in_file(temporaryFile, temporaryFile, folder)
+                else:
+                    create_image_folder(temporaryFile, image_themes)
+                    image_themes_path = create_path_name(temporaryFile, image_themes)
 
                 for folder in data[key][image_themes]:
-                    create_image_folder(image_themes_path, folder)
-                    folder_path = create_path_name(image_themes_path, folder)
+                    if (folder.endswith('.jpg') or folder.endswith('.jpeg')):
+                        create_images_in_file(image_themes_path, temporaryFile, folder)
+                    else:
+                        create_image_folder(image_themes_path, folder)
+                        folder_path = create_path_name(image_themes_path, folder)
 
                     for image in data[key][image_themes][folder]:
                         if (image.endswith('.jpg') or image.endswith('.jpeg')):
@@ -95,7 +116,6 @@ def create_directory_structure(data, temporaryFile):
                                 create_images_in_file(new_folder_path, temporaryFile, nextImage)
 
 
-#def check_directory_structure_in_json(json_data, folder_path, temporaryFile):
 
 def create_images_in_file(folder_path, temporaryFile, image):
     os.chdir(folder_path)
